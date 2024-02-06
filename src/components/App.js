@@ -56,6 +56,7 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(function () {
     async function fetchMovies() {
@@ -73,6 +74,7 @@ export default function App() {
         setIsLoading(false);
       } catch (err) {
         console.error(err.message);
+        setError(err.message);
       }
     }
     fetchMovies();
@@ -94,7 +96,12 @@ export default function App() {
       </NavBar>
 
       <Main>
-        <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box>
+        <Box>
+          {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
+          {isLoading && <Loader />}
+          {isLoading && !error && <MovieList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
+        </Box>
 
         <Box>
           <WatchedSummary watched={watched} />
@@ -107,6 +114,14 @@ export default function App() {
 
 function Loader() {
   return <p className="loader">Loading...</p>;
+}
+
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      <span>⛔{message}</span>
+    </p>
+  );
 }
 
 function NavBar({ children }) {
