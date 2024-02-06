@@ -308,6 +308,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
       poster,
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
+      userRating,
     };
 
     onAddWatched(newMovie);
@@ -360,9 +361,11 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
                 size={24}
                 onSetRating={setUserRating}
               />
-              <button className="btn-add" onClick={handleAdd}>
-                + Add to watched list
-              </button>
+              {userRating > 0 && (
+                <button className="btn-add" onClick={handleAdd}>
+                  + Add to watched list
+                </button>
+              )}
             </div>
             <p>
               <em>{plot}</em>
