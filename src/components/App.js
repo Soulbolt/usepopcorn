@@ -55,11 +55,27 @@ const KEY = process.env.REACT_APP_OMDB_API_KEY;
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(function () {
-    fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
-      .then((res) => res.json())
-      .then((data) => setMovies(data.Search));
+    async function fetchMovies() {
+      try {
+        setIsLoading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`
+        );
+
+        if (!res.ok)
+          throw new Error("Something went wrong with fetching movies.");
+
+        const data = await res.json();
+        setMovies(data.Search);
+        setIsLoading(false);
+      } catch (err) {
+        console.error(err.message);
+      }
+    }
+    fetchMovies();
   }, []);
   // setting fetch inside the component causes an infinite fetch request. Not the way to do it.
   // to avoid this issue we use the useEffect 'hook'
@@ -78,9 +94,7 @@ export default function App() {
       </NavBar>
 
       <Main>
-        <Box>
-          <MovieList movies={movies} />
-        </Box>
+        <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box>
 
         <Box>
           <WatchedSummary watched={watched} />
@@ -89,6 +103,10 @@ export default function App() {
       </Main>
     </>
   );
+}
+
+function Loader() {
+  return <p className="loader">Loading...</p>;
 }
 
 function NavBar({ children }) {
