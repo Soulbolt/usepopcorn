@@ -75,11 +75,11 @@ export default function App() {
   console.log("During Render");*/
 
   function handleSelectedMovie(id) {
-    setSelectedId(id);
+    setSelectedId((selectedId) => (id === selectedId ? null : id));
   }
 
   function handleCloseMovie() {
-    selectedId(null);
+    setSelectedId(null);
   }
 
   useEffect(
@@ -99,6 +99,7 @@ export default function App() {
           if (data.Response === "false") throw new Error("Movie not found.");
 
           setMovies(data.Search);
+          console.log(data.Search);
         } catch (err) {
           console.error(err.message);
           setError(err.message);
@@ -207,7 +208,7 @@ function Search({ query, setQuery }) {
 function NumResults({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{movies !== undefined ? movies.length : 0}</strong> results
     </p>
   );
 }
@@ -276,6 +277,10 @@ function Movie({ movie, onSelectMovie }) {
 }
 
 function MovieDetails({ selectedId, onCloseMovie }) {
+  // useEffect(function () {
+  //   async function getMovieDetails()
+  // }, []);
+
   return (
     <div className="details">
       <button className="btn-back" onClick={onCloseMovie}>
