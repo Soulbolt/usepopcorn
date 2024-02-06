@@ -55,10 +55,14 @@ const KEY = process.env.REACT_APP_OMDB_API_KEY;
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
-
+  // setting fetch inside the component causes an infinite fetch request. Not the way to do it.
+  // to avoid this issue we use the useEffect 'hook'
   fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
     .then((res) => res.json())
-    .then((data) => setMovies(data.Search));
+    .then((data) => console.log(data.Search));
+
+  // To see the error of too many re-renders do to infinite fetch requests.
+  // setWatched([]);
 
   return (
     <>
