@@ -268,6 +268,19 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   /// Calling a state or a return that's not in top order will lead to errors.
   // if (imdbRating > 8) [isTop, setIsTop] = useState(true);
   // if (imdbRating > 8) return <p>Greatest Ever!</p>
+  // using state by itself does not update there for conditional is always false. But if effect is added then will it update.
+  // const [isTop, setIsTop] = useState(imdbRating > 8);
+  // console.log(isTop);
+  // useEffect(
+  //   function () {
+  //     setIsTop(imdbRating > 8);
+  //   },
+  //   [imdbRating]
+  // );
+  // using a "derived state" condtional will work as it is rendered/update every time there is a render.
+  // const isTop = imdbRating > 8;
+  // console.log(isTop);
+  // const [avgRating, setAvgRating] = useState(0);
 
   function handleAdd() {
     const newMovie = {
@@ -282,6 +295,8 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 
     onAddWatched(newMovie);
     onCloseMovie();
+    // setAvgRating(Number(imdbRating));
+    // setAvgRating((avgRating) => (avgRating + userRating) / 2);
   }
   // Effect to handle the keydown function when Esc Key is pressed
   useEffect(
@@ -353,6 +368,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
               </p>
             </div>
           </header>
+          {/* {avgRating} */}
           <section>
             <div className="rating">
               {!isWatched ? (
