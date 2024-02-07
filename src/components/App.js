@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import StarRating from "./StarRating";
-import { doc } from "prettier";
+import { useMovies } from "./useMovies";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -9,10 +9,8 @@ const KEY = process.env.REACT_APP_OMDB_API_KEY;
 
 export default function App() {
   const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const { movies, isLoading, error } = useMovies(query);
 
   // const [watched, setWatched] = useState([]);
   // Reads local storage, Using another useEffect works as well, sample below.
@@ -54,63 +52,6 @@ export default function App() {
     },
     [watched]
   );
-
-  useEffect(
-    function () {
-      // Clean up fetch data (stop unnecessary request)
-      const controller = new AbortController();
-
-      async function fetchMovies() {
-        try {
-          setIsLoading(true);
-          setError("");
-
-          const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
-            { signal: controller.signal } // part of clean up fetch data
-          );
-
-          if (!res.ok)
-            throw new Error("Something went wrong with fetching movies.");
-
-          const data = await res.json();
-          if (data.Response === "false") throw new Error("Movie not found.");
-
-          setMovies(data.Search);
-          setError("");
-        } catch (err) {
-          console.log(err.message);
-          if (err.name !== "AbortError") {
-            setError(err.message);
-          }
-        } finally {
-          setIsLoading(false);
-        }
-      }
-
-      if (query.length < 3) {
-        setMovies([]);
-        setError("");
-        return;
-      }
-
-      handleCloseMovie();
-      fetchMovies();
-      // finalizes clean up fetch data.
-      return function () {
-        controller.abort();
-      };
-    },
-    [query]
-  );
-  // setting fetch inside the component causes an infinite fetch request. Not the way to do it.
-  // to avoid this issue we use the useEffect 'hook'
-  // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
-  //   .then((res) => res.json())
-  //   .then((data) => console.log(data.Search));
-
-  // To see the error of too many re-renders do to infinite fetch requests.
-  // setWatched([]);
 
   return (
     <>
