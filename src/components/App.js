@@ -9,10 +9,16 @@ const KEY = process.env.REACT_APP_OMDB_API_KEY;
 export default function App() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+
+  // const [watched, setWatched] = useState([]);
+  // Reads local storage, Using another useEffect works as well, sample below.
+  const [watched, setWatched] = useState(function () {
+    const storedValue = localStorage.getItem("watched");
+    return JSON.parse(storedValue);
+  });
 
   function handleSelectedMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -24,11 +30,29 @@ export default function App() {
 
   function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
+    // Store movie list in local storage
+    // localStorage.setItem("watched", JSON.stringify([...watched, movie]));
   }
 
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+  // Read movie list in local storage.
+  // useEffect(function () {
+  //   const json = localStorage.getItem("watched");
+  //   const movies = JSON.parse(json);
+
+  //   if (movies) {
+  //     setWatched((movieList) => [...movieList, ...movies]);
+  //   }
+  // }, []);
+  // Store movie list in local storage.
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
 
   useEffect(
     function () {
